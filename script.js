@@ -68,7 +68,7 @@ let overlayImage = new Image();
 userVideo.crossOrigin = "anonymous";
 userImage.crossOrigin = "anonymous";
 overlayImage.crossOrigin = "anonymous";
-overlayImage.src = 'decor-flyer.png';
+overlayImage.src = 'decor-flyer.png'; 
 
 let currentMediaType = null, mediaLoaded = false, isProcessing = false;
 
@@ -76,7 +76,7 @@ function switchLang(lang) {
     currentLang = lang;
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.innerText === lang) btn.classList.add('active');
+        if(btn.innerText === lang) btn.classList.add('active');
     });
     document.getElementById('mainTitle').innerText = translations[lang].title;
     document.getElementById('subTitle').innerText = translations[lang].subTitle;
@@ -95,7 +95,7 @@ function switchLang(lang) {
         listContainer.appendChild(li);
     });
     zoomLabel.innerText = `${translations[lang].zoom}: ${zoomRange.value}%`;
-    if (mediaLoaded && !isProcessing) statusText.innerText = translations[lang].statusReady;
+    if(mediaLoaded && !isProcessing) statusText.innerText = translations[lang].statusReady;
 }
 
 switchLang('RU');
@@ -107,11 +107,12 @@ switchLang('RU');
     });
 });
 
-mediaInput.addEventListener('change', function (e) {
-    const file = e.target.files;
+mediaInput.addEventListener('change', function(e) {
+    const file = e.target.files[0]; // Correction ici : prend uniquement le premier fichier
     if (!file) return;
+    
     mediaLoaded = false;
-    shareBox.style.display = 'none';
+    shareBox.style.display = 'none'; 
     statusText.innerText = translations[currentLang].statusLoading;
     const fileURL = URL.createObjectURL(file);
 
@@ -119,11 +120,11 @@ mediaInput.addEventListener('change', function (e) {
         currentMediaType = 'video';
         userVideo.src = fileURL;
         userVideo.muted = true; userVideo.playsInline = true; userVideo.loop = true;
-        userVideo.onloadeddata = function () { initCanvas(); userVideo.play(); drawVideoLoop(); };
+        userVideo.onloadeddata = function() { initCanvas(); userVideo.play(); drawVideoLoop(); };
     } else if (file.type.startsWith('image/')) {
         currentMediaType = 'image';
         userImage.src = fileURL;
-        userImage.onload = function () { initCanvas(); drawFrame(); };
+        userImage.onload = function() { initCanvas(); drawFrame(); };
     }
 });
 
@@ -146,7 +147,7 @@ function drawFrame() {
     let sW = currentMediaType === 'video' ? userVideo.videoWidth : userImage.width;
     let sH = currentMediaType === 'video' ? userVideo.videoHeight : userImage.height;
     if (!sW || !sH) return;
-
+    
     let baseScale = Math.max(canvas.width / sW, canvas.height / sH);
     let userZoom = zoomRange.value / 100;
     let fW = sW * baseScale * userZoom;
@@ -159,22 +160,22 @@ function drawFrame() {
     ctx.drawImage(overlayImage, 0, 0, canvas.width, canvas.height);
 }
 
-downloadBtn.addEventListener('click', async function () {
+downloadBtn.addEventListener('click', async function() {
     if (isProcessing) return;
     if (currentMediaType === 'image') {
         statusText.innerText = translations[currentLang].statusGenImg;
         const a = document.createElement('a'); a.href = canvas.toDataURL('image/jpeg', 0.95);
         a.download = 'promo.jpg'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
         statusText.innerText = translations[currentLang].statusDoneImg;
-        shareBox.style.display = 'block';
+        shareBox.style.display = 'block'; 
     } else if (currentMediaType === 'video') {
         isProcessing = true; downloadBtn.disabled = true;
         statusText.innerText = translations[currentLang].statusGenVid;
-
+        
         userVideo.loop = false; userVideo.currentTime = 0; userVideo.muted = false;
-        userVideo.ontimeupdate = function () { drawFrame(); };
+        userVideo.ontimeupdate = function() { drawFrame(); };
 
-        const stream = canvas.captureStream(30);
+        const stream = canvas.captureStream(30); 
         let srcStream = userVideo.captureStream ? userVideo.captureStream() : userVideo.mozCaptureStream();
         if (srcStream && srcStream.getAudioTracks().length > 0) {
             stream.addTrack(srcStream.getAudioTracks());
@@ -182,36 +183,37 @@ downloadBtn.addEventListener('click', async function () {
 
         let chunks = [];
         let options = { mimeType: 'video/mp4;codecs=avc1.42E01F,mp4a.40.2' };
-
+        
         if (!MediaRecorder.isTypeSupported(options)) options = { mimeType: 'video/mp4;codecs=h264' };
         if (!MediaRecorder.isTypeSupported(options)) options = { mimeType: 'video/mp4' };
         if (!MediaRecorder.isTypeSupported(options)) options = { mimeType: 'video/webm;codecs=h264' };
         if (!MediaRecorder.isTypeSupported(options)) options = { mimeType: 'video/webm' };
 
         const mr = new MediaRecorder(stream, options);
-        mr.ondataavailable = function (e) { if (e.data.size > 0) chunks.push(e.data); };
-
-        mr.onstop = function () {
-            userVideo.ontimeupdate = null;
-
+        mr.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+        
+        mr.onstop = function() {
+            userVideo.ontimeupdate = null; 
+            
             const blobData = new Blob(chunks, { type: 'video/mp4' });
-            const a = document.createElement('a');
+            const a = document.createElement('a'); 
             a.href = URL.createObjectURL(blobData);
-            a.download = 'promo.mp4';
+            a.download = 'promo.mp4'; 
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
-
+            
             statusText.innerText = translations[currentLang].statusDoneVid;
             downloadBtn.disabled = false; isProcessing = false;
             userVideo.muted = true; userVideo.loop = true; userVideo.play(); drawVideoLoop();
-
-            shareBox.style.display = 'block';
+            
+            shareBox.style.display = 'block'; 
         };
-
+        
         mr.start();
         userVideo.play();
-        userVideo.onended = function () { mr.stop(); };
+        userVideo.onended = function() { mr.stop(); };
     }
 });
+
 
 function shareWhatsApp() {
     const text = encodeURIComponent(translations[currentLang].whatsappMsg);
