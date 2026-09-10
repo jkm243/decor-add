@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promo - Afro-Latino Carnaval</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="switchLang('RU')">RU</button>
+        <button class="lang-btn" onclick="switchLang('EN')">EN</button>
+    </div>
+
+    <h1 id="mainTitle">Промо Afro-Latino Carnaval</h1>
+    <p id="subTitle">Добавьте рамку мероприятия на ваше фото или видео за пару секунд!</p>
+
+    <label class="upload-btn">
+        <span id="uploadText">Выбрать файл (Видео или Фото)</span>
+        <input type="file" id="mediaInput" accept="video/*,image/*">
+    </label>
+
+    <div id="status" class="status"></div>
+
+    <div class="preview-box" id="previewBox">
+        <canvas id="canvasRender"></canvas>
+    </div>
+
+    <div class="controls" id="controlsBox">
+        <h3 class="instructions-title" id="insTitle">⚙️ Инструкция:</h3>
+        <ul class="instructions-list" id="insList"></ul>
+
+        <div class="control-group">
+            <label id="zoomLabel">Масштаб: 100%</label>
+            <input type="range" id="zoomRange" min="10" max="300" value="100">
+        </div>
+        <div class="control-group">
+            <label id="labelX">Смещение X</label>
+            <input type="range" id="posXRange" min="-500" max="500" value="0">
+        </div>
+        <div class="control-group">
+            <label id="labelY">Смещение Y</label>
+            <input type="range" id="posYRange" min="-500" max="500" value="0">
+        </div>
+    </div>
+
+    <button id="downloadBtn" class="btn-download">Скачать готовый файл</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #121214;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+}
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #1a1a1e;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    position: relative;
+}
+.lang-switch {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+}
+.lang-btn {
+    background: #252529;
+    color: #aaa;
+    border: 1px solid #444;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+.lang-btn.active {
+    background: #4dadff;
+    color: white;
+    border-color: #4dadff;
+}
+h1 { color: #4dadff; font-size: 24px; margin-bottom: 5px; margin-top: 20px; }
+p { color: #aaa; font-size: 14px; margin-top: 0; }
+.upload-btn {
+    background: #4dadff;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: bold;
+    margin: 15px 0;
+}
+input[type="file"] { display: none; }
+.preview-box {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 9 / 16;
+    margin: 15px auto;
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    display: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.controls {
+    display: none;
+    background: #252529;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    text-align: left;
+}
+.instructions-title {
+    margin-top: 0;
+    color: #4dadff;
+    font-size: 16px;
+}
+.instructions-list {
+    font-size: 13px;
+    color: #aaa;
+    padding-left: 20px;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+.control-group {
+    margin-bottom: 12px;
+}
+.control-group label {
+    display: block;
+    font-size: 13px;
+    color: #ccc;
+    margin-bottom: 5px;
+}
+.control-group input[type="range"] {
+    width: 100%;
+    accent-color: #4dadff;
+}
+.btn-download {
+    background: #28a745;
+    color: white;
+    padding: 14px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    display: none;
+    margin-top: 15px;
+    width: 100%;
+}
+.btn-download:disabled { background: #555; cursor: not-allowed; }
+.status { color: #ffc107; font-weight: bold; margin-top: 10px; font-size: 14px; }
