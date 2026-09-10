@@ -1,8 +1,3 @@
-// On injecte dynamiquement la bibliothèque FFmpeg.wasm pour éviter de lourds fichiers locaux
-const ffmpegScript = document.createElement('script');
-ffmpegScript.src = 'https://unpkg.com';
-document.head.appendChild(ffmpegScript);
-
 const translations = {
     RU: {
         title: "Промо Afro-Latino Carnaval",
@@ -12,7 +7,7 @@ const translations = {
         insList: [
             "Используйте ползунки ниже, чтобы идеально подогнать ваш файл под рамку.",
             "Вы можете отдалить/приблизить изображение и сместить его во все стороны.",
-            "Конвертация в MP4 происходит автоматически при скачивании."
+            "Экспорт в MP4 происходит мгновенно и без задержек."
         ],
         zoom: "Масштаб",
         labelX: "Смещение по горизонтали (X)",
@@ -22,8 +17,10 @@ const translations = {
         statusReady: "Отрегулируйте размер и положение файла ниже перед скачиванием.",
         statusGenImg: "Создание изображения...",
         statusDoneImg: "Изображение успешно скачано!",
-        statusGenVid: "Идет обработка и конвертация в MP4... Пожалуйста, подождите.",
-        statusDoneVid: "MP4 видео успешно скачано и готово к публикации!"
+        statusGenVid: "Идет мгновенное сохранение в MP4... Пожалуйста, подождите.",
+        statusDoneVid: "MP4 видео успешно скачано и готово к публикации!",
+        shareTitle: "📢 Поделиться в соцсетях:",
+        whatsappMsg: "Привет! Посмотри мое видео с Afro-Latino Carnaval! Присоединяйся к нам 🎉"
     },
     EN: {
         title: "Promo Afro-Latino Carnaval",
@@ -33,7 +30,7 @@ const translations = {
         insList: [
             "Use the sliders below to perfectly fit your file under the frame.",
             "You can zoom in/out and shift the position horizontally or vertically.",
-            "Conversion to MP4 happens automatically during download."
+            "Export to MP4 happens instantly without delays."
         ],
         zoom: "Zoom",
         labelX: "Horizontal Position (X)",
@@ -43,8 +40,10 @@ const translations = {
         statusReady: "Adjust the size and position below before downloading.",
         statusGenImg: "Generating image...",
         statusDoneImg: "Image downloaded successfully!",
-        statusGenVid: "Processing and converting to MP4... Please wait.",
-        statusDoneVid: "MP4 Video downloaded successfully and ready to post!"
+        statusGenVid: "Saving MP4 video instantly... Please wait.",
+        statusDoneVid: "MP4 Video downloaded successfully and ready to post!",
+        shareTitle: "📢 Share on Socials:",
+        whatsappMsg: "Hey! Check out my video from the Afro-Latino Carnaval! Join us 🎉"
     }
 };
 
@@ -60,6 +59,7 @@ const zoomRange = document.getElementById('zoomRange');
 const posXRange = document.getElementById('posXRange');
 const posYRange = document.getElementById('posYRange');
 const zoomLabel = document.getElementById('zoomLabel');
+const shareBox = document.getElementById('shareBox');
 
 let userVideo = document.createElement('video');
 let userImage = new Image();
@@ -71,19 +71,6 @@ overlayImage.crossOrigin = "anonymous";
 overlayImage.src = 'decor-flyer.png';
 
 let currentMediaType = null, mediaLoaded = false, isProcessing = false;
-let ffmpegInstance = null;
-
-// Initialisation transparente de FFmpeg en arrière-plan
-async function loadFFmpeg() {
-    if (typeof FFmpeg === 'undefined') {
-        setTimeout(loadFFmpeg, 500);
-        return;
-    }
-    const { createFFmpeg } = FFmpeg;
-    ffmpegInstance = createFFmpeg({ log: false });
-    await ffmpegInstance.load();
-}
-loadFFmpeg();
 
 function switchLang(lang) {
     currentLang = lang;
@@ -97,6 +84,7 @@ function switchLang(lang) {
     document.getElementById('insTitle').innerText = translations[lang].insTitle;
     document.getElementById('labelX').innerText = translations[lang].labelX;
     document.getElementById('labelY').innerText = translations[lang].labelY;
+    document.getElementById('shareTitle').innerText = translations[lang].shareTitle;
     downloadBtn.innerText = translations[lang].btnDownload;
 
     const listContainer = document.getElementById('insList');
@@ -120,9 +108,10 @@ switchLang('RU');
 });
 
 mediaInput.addEventListener('change', function (e) {
-    const file = e.target.files[0];
+    const file = e.target.files;
     if (!file) return;
     mediaLoaded = false;
+    shareBox.style.display = 'none';
     statusText.innerText = translations[currentLang].statusLoading;
     const fileURL = URL.createObjectURL(file);
 
@@ -177,12 +166,8 @@ downloadBtn.addEventListener('click', async function () {
         const a = document.createElement('a'); a.href = canvas.toDataURL('image/jpeg', 0.95);
         a.download = 'promo.jpg'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
         statusText.innerText = translations[currentLang].statusDoneImg;
+        shareBox.style.display = 'block';
     } else if (currentMediaType === 'video') {
-        if (!ffmpegInstance || !ffmpegInstance.isLoaded()) {
-            alert("Пожалуйста, подождите секунду, модуль конвертации еще загружается...");
-            return;
-        }
-
         isProcessing = true; downloadBtn.disabled = true;
         statusText.innerText = translations[currentLang].statusGenVid;
 
@@ -196,31 +181,47 @@ downloadBtn.addEventListener('click', async function () {
         }
 
         let chunks = [];
-        const mr = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9,opus' });
+        let options = { mimeType: 'video/mp4;codecs=avc1.42E01F,mp4a.40.2' };
+
+        if (!MediaRecorder.isTypeSupported(options)) options = { mimeType: 'video/mp4;codecs=h264' };
+        if (!MediaRecorder.isTypeSupported(options)) options = { mimeType: 'video/mp4' };
+        if (!MediaRecorder.isTypeSupported(options)) options = { mimeType: 'video/webm;codecs=h264' };
+        if (!MediaRecorder.isTypeSupported(options)) options = { mimeType: 'video/webm' };
+
+        const mr = new MediaRecorder(stream, options);
         mr.ondataavailable = function (e) { if (e.data.size > 0) chunks.push(e.data); };
 
-        mr.onstop = async function () {
+        mr.onstop = function () {
             userVideo.ontimeupdate = null;
 
-            // ÉTAPE DE CONVERSION FFMPEG AUTOMATIQUE ET TRANSPARENTE
-            const webmBlob = new Blob(chunks, { type: 'video/webm' });
-            const arrayBuffer = await webmBlob.arrayBuffer();
-
-            // Écriture du fichier WebM temporaire dans la mémoire virtuelle de FFmpeg
-            ffmpegInstance.FS('writeFile', 'input.webm', new Uint8Array(arrayBuffer));
-
-            // Commande de conversion ultra-rapide en vrai MP4 (Codec H.264 compatible WhatsApp/Instagram)
-            await ffmpegInstance.run('-i', 'input.webm', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-c:a', 'aac', 'output.mp4');
-
-            // Lecture du fichier MP4 converti
-            const mp4Data = ffmpegInstance.FS('readFile', 'output.mp4');
-            const mp4Blob = new Blob([mp4Data.buffer], { type: 'video/mp4' });
-
-            // Lancement automatique du téléchargement du fichier final .mp4
+            const blobData = new Blob(chunks, { type: 'video/mp4' });
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(mp4Blob); a.download = 'promo.mp4'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            // Nettoyage de la mémoire virtuelle
-            ffmpegInstance.FS('unlink', 'input.webm'); ffmpegInstance.FS('unlink', 'output.mp4'); statusText.innerText = translations[currentLang].statusDoneVid; downloadBtn.disabled = false; isProcessing = false; userVideo.muted = true; userVideo.loop = true; userVideo.play(); drawVideoLoop();
-        }; mr.start(); userVideo.play(); userVideo.onended = function () { mr.stop(); };
+            a.href = URL.createObjectURL(blobData);
+            a.download = 'promo.mp4';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+
+            statusText.innerText = translations[currentLang].statusDoneVid;
+            downloadBtn.disabled = false; isProcessing = false;
+            userVideo.muted = true; userVideo.loop = true; userVideo.play(); drawVideoLoop();
+
+            shareBox.style.display = 'block';
+        };
+
+        mr.start();
+        userVideo.play();
+        userVideo.onended = function () { mr.stop(); };
     }
 });
+
+function shareWhatsApp() {
+    const text = encodeURIComponent(translations[currentLang].whatsappMsg);
+    const url = `https://api.whatsapp.com/send?text=${text}`;
+    window.open(url, '_blank');
+}
+
+function shareInstagram() { 
+    if (currentLang === 'RU') { 
+        alert("Видео сохранено в вашу галерею! Откройте Instagram и выберите его для публикации в Сторис или Reels ✨"); } 
+        else { 
+            alert("Video saved to your gallery! Open Instagram and select it to publish as a Story or Reel ✨"); } 
+            window.open('instagram.com', '_blank'); }
