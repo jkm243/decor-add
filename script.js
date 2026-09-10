@@ -108,7 +108,7 @@ switchLang('RU');
 });
 
 mediaInput.addEventListener('change', function(e) {
-    const file = e.target.files[0]; // Correction ici : prend uniquement le premier fichier
+    const file = e.target.files[0]; // Correction de l'upload effectuée
     if (!file) return;
     
     mediaLoaded = false;
@@ -177,8 +177,13 @@ downloadBtn.addEventListener('click', async function() {
 
         const stream = canvas.captureStream(30); 
         let srcStream = userVideo.captureStream ? userVideo.captureStream() : userVideo.mozCaptureStream();
-        if (srcStream && srcStream.getAudioTracks().length > 0) {
-            stream.addTrack(srcStream.getAudioTracks());
+        
+        // CORRECTION : Extraction et ajout sécurisé de la piste audio unique [0]
+        if (srcStream) {
+            const audioTracks = srcStream.getAudioTracks();
+            if (audioTracks.length > 0) {
+                stream.addTrack(audioTracks[0]); // Injecte uniquement le premier élément de type MediaStreamTrack
+            }
         }
 
         let chunks = [];
@@ -207,7 +212,6 @@ downloadBtn.addEventListener('click', async function() {
             
             shareBox.style.display = 'block'; 
         };
-        
         mr.start();
         userVideo.play();
         userVideo.onended = function() { mr.stop(); };
