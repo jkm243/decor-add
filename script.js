@@ -20,7 +20,7 @@ const translations = {
         statusGenVid: "Идет мгновенное сохранение в MP4... Пожалуйста, подождите.",
         statusDoneVid: "MP4 видео успешно скачано и готово к публикации!",
         shareTitle: "📢 Поделиться в соцсетях:",
-        whatsappMsg: "Привет! Посмотри мое видео с Afro-Latino Carnaval! Присоединяйся к нам 🎉"
+        whatsappMsg: "Персонализируй свое видео/фото в тематике карнавала 🎉"
     },
     EN: {
         title: "Promo Afro-Latino Carnaval",
@@ -43,7 +43,7 @@ const translations = {
         statusGenVid: "Saving MP4 video instantly... Please wait.",
         statusDoneVid: "MP4 Video downloaded successfully and ready to post!",
         shareTitle: "📢 Share on Socials:",
-        whatsappMsg: "Hey! Check out my video from the Afro-Latino Carnaval! Join us 🎉"
+        whatsappMsg: "Customize your video/photo with the carnival theme 🎉"
     }
 };
 
@@ -108,8 +108,8 @@ switchLang('RU');
 });
 
 mediaInput.addEventListener('change', function(e) {
-    const file = e.target.files[0]; // Correction de l'upload effectuée
-    if (!file) return;
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0]; 
     
     mediaLoaded = false;
     shareBox.style.display = 'none'; 
@@ -178,11 +178,10 @@ downloadBtn.addEventListener('click', async function() {
         const stream = canvas.captureStream(30); 
         let srcStream = userVideo.captureStream ? userVideo.captureStream() : userVideo.mozCaptureStream();
         
-        // CORRECTION : Extraction et ajout sécurisé de la piste audio unique [0]
         if (srcStream) {
             const audioTracks = srcStream.getAudioTracks();
             if (audioTracks.length > 0) {
-                stream.addTrack(audioTracks[0]); // Injecte uniquement le premier élément de type MediaStreamTrack
+                stream.addTrack(audioTracks[0]); 
             }
         }
 
@@ -212,12 +211,12 @@ downloadBtn.addEventListener('click', async function() {
             
             shareBox.style.display = 'block'; 
         };
+        
         mr.start();
         userVideo.play();
         userVideo.onended = function() { mr.stop(); };
     }
 });
-
 
 function shareWhatsApp() {
     const text = encodeURIComponent(translations[currentLang].whatsappMsg);

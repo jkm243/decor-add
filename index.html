@@ -3,40 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Promo - Afro-Latino Carnaval</title>
+    
+    <!-- Стандартные Мета-теги (SEO) -->
+    <title>Afro-Latino Carnaval — Создай свое промо-видео</title>
+    <meta name="description" content="Пятница 18 сентября, старт в 22:00 в клубе РОДНЯ (Красноармейская 33). Музыка от Jesse The Man, DJ Jac, DJ Ay! Huma, DJ Fred. Вход: 500₽. Настрой свое видео здесь!">
+
+    <!-- Открытые мета-теги граф (Open Graph для WhatsApp, Telegram, Facebook) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Afro-Latino Carnaval — Клуб РОДНЯ">
+    <meta property="og:description" content="18 сентября в 22:00. DJ's Set, Drinks & Hookah, Big Dance Floor. Персонализируй свое видео или фото в стиле карнавала!">
+    <meta property="og:image" content="decor-flyer.png">
+
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Ajout de styles rapides pour les boutons de partage */
-        .share-box {
-            display: none;
-            background: #252529;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-        }
-        .share-title {
-            margin-top: 0;
-            color: #4dadff;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .share-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        .share-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            color: white;
-            font-size: 14px;
-            transition: 0.2s;
-        }
+        .share-box { display: none; background: #252529; padding: 15px; border-radius: 10px; margin-top: 15px; }
+        .share-title { margin-top: 0; color: #4dadff; font-size: 16px; font-weight: bold; }
+        .share-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+        .share-btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; font-size: 14px; transition: 0.2s; }
         .btn-whatsapp { background: #25D366; }
         .btn-whatsapp:hover { background: #20ba5a; }
         .btn-instagram { background: #E1306C; }
@@ -85,7 +68,6 @@
 
     <button id="downloadBtn" class="btn-download">Скачать готовый файл</button>
 
-    <!-- Zone de Partage rapide (cachée par défaut, s'affiche à la fin) -->
     <div class="share-box" id="shareBox">
         <div class="share-title" id="shareTitle">📢 Поделиться в соцсетях:</div>
         <div class="share-buttons">
